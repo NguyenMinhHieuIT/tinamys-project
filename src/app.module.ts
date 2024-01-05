@@ -3,6 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmConfig } from './config/typeorm.config';
+import { UserModule } from './app/user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { CodeModule } from './app/code/code.module';
+import { DeviceModule } from './app/device/device.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -11,6 +16,11 @@ import { TypeOrmConfig } from './config/typeorm.config';
       isGlobal: true,
     }),
     TypeOrmConfig(),
+    UserModule,
+    AuthModule,
+    CodeModule,
+    DeviceModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
