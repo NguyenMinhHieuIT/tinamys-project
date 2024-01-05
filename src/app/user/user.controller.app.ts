@@ -19,4 +19,6 @@ export class UserControllerApp{
     public profile(@Request() req){
         return this.userSer.getProfile(req.user);
     }
+
+    //
 }
