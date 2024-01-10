@@ -27,7 +27,7 @@ export class AuthService {
         data.password = await bcrypt.hash(data.password, 5);
         data['type_login'] = typeLogin.local;
         //create user
-        const user = await this.userSer.create(data);
+        const user = await this.userSer.createRegister(data);
         //create code 
         const code = await this.codeSer.createByFields({
             code: this.codeSer.createOtp(),
@@ -39,6 +39,7 @@ export class AuthService {
             to: data.email,
             subject: code['code'] + process.env.REGISTER_SUBJECT,
             text: process.env.REGISTER_TEXT,
+            html:`<h2>Or click <a href="http://localhost:3000/api/auth/auth-register?otp=${code['code']}&email=${data.email}">here</a> to verify .</h2>`
         })
         //return
         return {
@@ -84,8 +85,9 @@ export class AuthService {
     }
 
     public async fogotPassword(data : ForgotPasswordDto){
-        const userCheckExist = await this.userSer.checkUserExist(data.email);
-        if(!userCheckExist) throw new ErrorException('User không tồn tại !')
+        const userExist = await this.userSer._checkDataExist(null , data); 
+        if(!userExist['success']) return userExist;
+        
         const user = await this.userSer.findOneByFields({email:data.email} , ['id']);
         const code = await this.codeSer.createByFields({
             code: this.codeSer.createOtp(),
@@ -106,6 +108,10 @@ export class AuthService {
     }
 
     public async authForgotPassword(data:AuthForgotPasswordDto){
+
+        const userExist = await this.userSer._checkDataExist(null , data); 
+        if(!userExist['success']) return userExist;
+
         data.newPassword = await bcrypt.hash(data.newPassword, 5);
         const code = await this.codeSer.compareOtp(data.otp, data.email , typeCode.forgot_password);
         

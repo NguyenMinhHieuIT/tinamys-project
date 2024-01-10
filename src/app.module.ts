@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CodeModule } from './app/code/code.module';
 import { DeviceModule } from './app/device/device.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     CodeModule,
     DeviceModule,
     EventEmitterModule.forRoot(),
+    EmailModule
   ],
   controllers: [AppController],
   providers: [AppService],

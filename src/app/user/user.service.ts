@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { ErrorException } from "src/exception/error.exception";
 import { CommonService } from "src/common/common.service";
 import * as bcrypt from 'bcrypt';
 import { statusConstant } from "src/constant/status.constant";
+import { CONSTANT } from "src/constant/constant";
 @Injectable()
 export class UserService extends CommonService<UserEntity>{
     constructor(
@@ -16,10 +17,10 @@ export class UserService extends CommonService<UserEntity>{
     }
     public aliasName:string = 'users';
 
-    public async create(data:any){
+    public async createRegister(data:any){
         try {
-            const userValidate = await this.checkUserExist(data.email); 
-            if(userValidate) throw new ErrorException('user đã tồn tại !');
+            const userExist = await this._checkDataExist(null , data); 
+            if(userExist['success']) throw new ErrorException('user đã tồn tại!');
             const userEntity = await this.userRepo.create(data);
             return await this.userRepo.save(userEntity);
         } catch (error) {
@@ -27,23 +28,11 @@ export class UserService extends CommonService<UserEntity>{
         }
     }
 
-    public async checkUserExist(email){
-        try {
-            const userQuery = await this.userRepo.createQueryBuilder(this.aliasName);
-            const userCount:number = await userQuery
-            .select([this.aliasName + '.email'])
-            .where(this.aliasName + '.email = :email' , {email:email})
-            .getCount();
-            return userCount > 0;
-        } catch (error) {
-            throw new ErrorException("checkUserExist error -- " + error);
-        } 
-    }
 
    public async validateUser(data){
         try {
-            const userValidate = await this.checkUserExist(data.email); 
-            if(!userValidate) throw new ErrorException('user chưa tồn tại !');
+            const userExist = await this._checkDataExist(null , data); 
+            if(!userExist['success']) throw new ErrorException(userExist['message']);
             const user = await this.userRepo.findOne({
                 where:{
                     email:data.email
@@ -79,15 +68,54 @@ export class UserService extends CommonService<UserEntity>{
    }
 
    public async findOneByFields(where , fields){
-    try {
-        const user  = await this.userRepo.findOne({
-            where:where,
-            select:fields
-        })
-            
-        return user;
-    } catch (error) {
-        throw new ErrorException('findOneByFields -- ' + error);
+        try {
+            const user  = await this.userRepo.findOne({
+                where:where,
+                select:fields
+            })
+                
+            return user;
+        } catch (error) {
+            throw new ErrorException('findOneByFields -- ' + error);
+        }
     }
-}
+
+    public async _checkDataExist(currentUser, data: DeepPartial<UserEntity>){
+        try {
+            if(data['email']){
+                const emailExist = await this._checkFieldExist('email' , data['email'] , null);
+                if(!emailExist){
+                    return {
+                        success:false,
+                        message:'User chưa tồn tại!',
+                    }
+                }
+            }
+
+            return {
+                success:true
+            }
+        } catch (error) {
+            throw new ErrorException('checkDataExist error -- ' + error);
+            
+        }
+        
+    }
+
+
+    public async _beforeUpdateData(currentUser: any, data: DeepPartial<UserEntity>){
+        try {
+            if(data['password']){
+                data['password'] = await bcrypt.hash(data['password'] , 5);
+
+            }
+            
+
+            data['status'] = data['status'] ?? CONSTANT.STATUS.ACTIVE;            
+            return data
+        } catch (error) {
+            throw new ErrorException('beforeUpdateData error -- ' + error);
+        }
+        
+    }
 }

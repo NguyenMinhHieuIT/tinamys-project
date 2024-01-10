@@ -15,7 +15,7 @@ export class UserEntity extends CommonEntity{
     @Column({name:'email' , type:'varchar'})
     email:string;
 
-    @Column({name:'password' , type:'varchar'})
+    @Column({name:'password' , type:'varchar' , select:false})
     password:string;
 
     @Column({name:'image' , type:'varchar' , default:null})

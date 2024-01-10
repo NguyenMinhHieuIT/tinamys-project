@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { CodeEntity } from "./code.entity";
 import { ErrorException } from "src/exception/error.exception";
 import { CommonService } from "src/common/common.service";
 import { UserEntity } from "../user/user.entity";
-import { typeCode } from "src/constant/type.code";
 import { statusConstant } from "src/constant/status.constant";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class CodeService extends CommonService<CodeEntity> {
@@ -15,6 +15,7 @@ export class CodeService extends CommonService<CodeEntity> {
         private readonly codeRepo:Repository<CodeEntity>,
         @InjectRepository(UserEntity) 
         private readonly userRepo:Repository<UserEntity>,
+        private readonly userSer:UserService,
     ){
         super(codeRepo);
     }
@@ -55,10 +56,32 @@ export class CodeService extends CommonService<CodeEntity> {
 
     public async updateByFileds(where , fields){
         try {
-            await this.repo.update(where , fields);
+            await this.repository.update(where , fields);
         } catch (error) {
             throw new ErrorException('updateCode error -- ' + error);
         }
+    }
+
+    public async _checkDataExist(currentUser : any, data : DeepPartial<CodeEntity>){
+        try {
+            if(data['user_id']){
+                const userExist = await this.userSer._checkFieldExist('id' , data['user_id'] , null);
+                if(!userExist){
+                    return {
+                        success:false,
+                        message:'User chưa tồn tại!'
+                    }
+                }
+            }
+
+
+            return {
+                success:true
+            }
+        } catch (error) {
+            throw new ErrorException('checkDataExist error -- ' + error);
+        }
+       
     }
 
     
