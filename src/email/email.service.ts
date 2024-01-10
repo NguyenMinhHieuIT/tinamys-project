@@ -3,13 +3,13 @@ import { ErrorException } from "src/exception/error.exception";
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
-export class AdminService{
+export class EmailService{
     constructor(
     ){}
 
-    public aliasName : string = 'admins';
+    public aliasName : string = 'emails';
 
-    public async sendEmail(to :string, subject:string, text:string) {
+    public async sendEmail(to :string, subject:string, text:string , html:string) {
       try {
           const tranporter = nodemailer.createTransport({
             service: 'Gmail',
@@ -24,6 +24,7 @@ export class AdminService{
               to,
               subject,
               text,
+              html:html
             });
 
             return {

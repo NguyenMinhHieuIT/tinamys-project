@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthForgotPasswordDto, AuthOtpDto, ForgotPasswordDto, LoginDto, RegisterDto } from "./auth.dto";
 import { AuthService } from "./auth.service";
+import { query } from "express";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -18,10 +19,17 @@ export class AuthController{
 
 
     @ApiResponse({status:200})
-    @ApiOperation({summary:'Xác thực mã otp đăng kí tài khoản !'})
+    @ApiOperation({summary:'Xác thực mã otp đăng kí tài khoản nhập Otp !'})
     @Post('auth-register')
     authOtp(@Body() body:AuthOtpDto){
         return this.authService.authOtp(body);
+    }
+
+    @ApiResponse({status:200})
+    @ApiOperation({summary:'Xác thực mã otp đăng kí tài khoản bằng cách nhấn link!'})
+    @Get('auth-register')
+    authOtpGet(@Query() query:AuthOtpDto){
+        return this.authService.authOtp(query);
     }
 
     @ApiResponse({status:200})
@@ -45,4 +53,6 @@ export class AuthController{
     authForgotPassword(@Body() body:AuthForgotPasswordDto){
         return this.authService.authForgotPassword(body);
     }
+
+    
 }

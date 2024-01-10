@@ -9,8 +9,8 @@ import { JwtModule } from "@nestjs/jwt";
 
 import { JwtStrategy } from "./strategy/jwt.strategy";
 import { jwtConstant } from "src/constant/jwt.constant";
-import { AdminModule } from "src/admin/admin.module";
 import { DeviceModule } from "src/app/device/device.module";
+import { EmailModule } from "src/email/email.module";
 
 
 @Module({
@@ -24,8 +24,8 @@ import { DeviceModule } from "src/app/device/device.module";
               expiresIn: jwtConstant.expiresIn,
             },
         }),
-        AdminModule,
-        DeviceModule
+        DeviceModule,
+        EmailModule
 
     ],
     controllers:[AuthController],
