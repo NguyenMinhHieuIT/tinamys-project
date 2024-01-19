@@ -9,12 +9,14 @@ import { CodeModule } from './app/code/code.module';
 import { DeviceModule } from './app/device/device.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EmailModule } from './email/email.module';
+import { CategoryModule } from './app/category/category.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.dev.env',
       isGlobal: true,
+      load:[]
     }),
     TypeOrmConfig(),
     UserModule,
@@ -22,7 +24,8 @@ import { EmailModule } from './email/email.module';
     CodeModule,
     DeviceModule,
     EventEmitterModule.forRoot(),
-    EmailModule
+    EmailModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService],

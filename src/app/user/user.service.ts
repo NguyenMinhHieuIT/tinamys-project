@@ -19,7 +19,7 @@ export class UserService extends CommonService<UserEntity>{
 
     public async createRegister(data:any){
         try {
-            const userExist = await this._checkDataExist(null , data); 
+            const userExist = await this._checkDataExist(null , data , null); 
             if(userExist['success']) throw new ErrorException('user đã tồn tại!');
             const userEntity = await this.userRepo.create(data);
             return await this.userRepo.save(userEntity);
@@ -31,7 +31,7 @@ export class UserService extends CommonService<UserEntity>{
 
    public async validateUser(data){
         try {
-            const userExist = await this._checkDataExist(null , data); 
+            const userExist = await this._checkDataExist(null , data , null); 
             if(!userExist['success']) throw new ErrorException(userExist['message']);
             const user = await this.userRepo.findOne({
                 where:{
@@ -39,6 +39,7 @@ export class UserService extends CommonService<UserEntity>{
                 },
                 select:['password' , 'email' , 'name' , 'status', 'id']
             })
+            
             if(user.status == statusConstant.in_active) throw new ErrorException('Người dùng chưa hoạt động <in_active> !');
             const {password , status , ... userData} = user;
             const checkPass = await bcrypt.compare(data.password , password);
@@ -80,10 +81,14 @@ export class UserService extends CommonService<UserEntity>{
         }
     }
 
-    public async _checkDataExist(currentUser, data: DeepPartial<UserEntity>){
+    public async _checkDataExist(currentUser, data: DeepPartial<UserEntity> , id){
         try {
             if(data['email']){
-                const emailExist = await this._checkFieldExist('email' , data['email'] , null);
+                let emailExist = true;
+                if(id){
+                    emailExist = await this._checkFieldExist('email' , data['email'] , id);
+                }
+                emailExist = await this._checkFieldExist('email' , data['email'] , null);
                 if(!emailExist){
                     return {
                         success:false,

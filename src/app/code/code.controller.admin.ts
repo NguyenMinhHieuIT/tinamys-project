@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags  } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags  } from "@nestjs/swagger";
 import { CodeService } from "./code.service";
 import { CreateCodeDto, UpdateCodeDto } from "./code.dto";
 import { JwtAuthGuard } from "src/auth/guard/jwt.auth.guard";
@@ -35,6 +35,7 @@ export class CodeControllerAdmin{
 
     @ApiResponse({status:200})
     @ApiOperation({summary:'Admin tìm một đối tượng code !'})
+    @ApiParam({name:'id' , type:Number , required:true})
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get('/:id')
@@ -51,17 +52,17 @@ export class CodeControllerAdmin{
     @UseGuards(JwtAuthGuard)
     @Get()
     findAllCode(@Request() req , @Query() query){
-        console.log(query);
         return this.codeSer.findAll(req.user, query);
     }
     
 
     @ApiResponse({status:200})
-    @ApiOperation({summary:'Admin xóa đối tượng code !'})
+    @ApiOperation({summary:'Admin xóa mềm code !'})
+    @ApiParam({description:'delete' , name:'id' , required:true})
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Delete('/:id')
-    deleteCode(@Request() req , @Param() param){
+    delete(@Request() req , @Param() param){
         return this.codeSer.delete(req.user, param.id);
     }
 }

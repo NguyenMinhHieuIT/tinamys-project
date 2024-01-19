@@ -1,9 +1,7 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthForgotPasswordDto, AuthOtpDto, ForgotPasswordDto, LoginDto, RegisterDto } from "./auth.dto";
+import { Body, Controller, Get, Param, Post, Query , Request } from "@nestjs/common";
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { AuthForgotPasswordDto, AuthOtpDto, ForgotPasswordDto, LoginDto, RefreshTokenDto, RegisterDto } from "./auth.dto";
 import { AuthService } from "./auth.service";
-import { query } from "express";
-
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController{
@@ -17,7 +15,6 @@ export class AuthController{
         return this.authService.register(body);
     }
 
-
     @ApiResponse({status:200})
     @ApiOperation({summary:'Xác thực mã otp đăng kí tài khoản nhập Otp !'})
     @Post('auth-register')
@@ -27,8 +24,9 @@ export class AuthController{
 
     @ApiResponse({status:200})
     @ApiOperation({summary:'Xác thực mã otp đăng kí tài khoản bằng cách nhấn link!'})
+    @ApiQuery({name:'token' , required:true , type:String})
     @Get('auth-register')
-    authOtpGet(@Query() query:AuthOtpDto){
+    authOtpGet(@Query() query){
         return this.authService.authOtp(query);
     }
 
@@ -54,5 +52,20 @@ export class AuthController{
         return this.authService.authForgotPassword(body);
     }
 
-    
+    @ApiResponse({status:200})
+    @ApiOperation({summary:'Xác thực mã otp quên mật khẩu kèm mật khẩu mới bằng nhấn link !'})
+    @Get('auth-forgot-password')
+    authForgotPasswordGet(@Query() query){
+        return this.authService.authForgotPassword(query);
+    }
+
+    @ApiResponse({status:200})
+    @ApiOperation({summary:'Refresh access token !'})
+    @Post('refresh-token')
+    refreshToken(@Body() body:RefreshTokenDto){
+        return this.authService.refreshToken(body);
+    }
+
+  
+
 }
