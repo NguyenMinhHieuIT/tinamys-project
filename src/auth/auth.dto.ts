@@ -66,3 +66,10 @@ export class AuthForgotPasswordDto {
 }
 
 
+export class RefreshTokenDto {
+    @ApiProperty()
+    @IsNotEmpty({message:'refesh token không để trống !'})
+    refreshToken:string;
+}
+
+

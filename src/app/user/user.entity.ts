@@ -35,6 +35,9 @@ export class UserEntity extends CommonEntity{
     @Column({name:'refresh_token' , type:'varchar', default:null})
     refresh_token:string;
 
+    @Column({name:'uav' , type:'varchar', default:null})
+    uav:string;
+
     @Column({name:'is_online' , type:'varchar', default:null})
     is_online:string;
 

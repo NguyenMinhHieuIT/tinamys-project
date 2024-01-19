@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ErrorException } from "src/exception/error.exception";
-import { FindManyOptions, FindOneOptions, Like, Not, Repository } from "typeorm";
+import { FindManyOptions, FindOneOptions, Not, Repository } from "typeorm";
 import { CommonEntity } from "./common.entity";
-import { skip } from "rxjs";
 
 @Injectable()
 export class CommonService<T extends CommonEntity>{
@@ -22,14 +21,15 @@ export class CommonService<T extends CommonEntity>{
     public async create(user , data:any){
         try {
             const dataEntity =  await this._beforeUpdateData(user , data);
-            const dataExist = await this._checkDataExist(user , dataEntity);
+            const dataExist = await this._checkDataExist(user , dataEntity , null);
             if(dataExist['success']) throw new ErrorException('Đối tượng đã tồn tại !');
+
             dataEntity['created_by_id'] = user['id'];
             const dataCreate = await this.repository.create(dataEntity);
             const dataSave =  await this.repository.save(dataCreate);
             return {
                 success:true,
-                create_id:this.aliasName + ' id: ' + dataSave['id'],
+                create_id:dataSave['id'],
             }
         } catch (error) {
             throw new ErrorException('common create error -- ' + error);
@@ -41,9 +41,10 @@ export class CommonService<T extends CommonEntity>{
         try {
             const dataEntity = await this._beforeUpdateData(user , data);
 
-            const dataExist = await this._checkDataExist(user , dataEntity);
-            if(!dataExist['success']) return dataExist;
+            const dataExist = await this._checkDataExist(user , dataEntity , user['id']);
+            if(dataExist['success']) throw new ErrorException('Đối tượng đã tồn tại !');
 
+        
             const options: FindOneOptions = {
                 where: { id },
             };
@@ -100,8 +101,21 @@ export class CommonService<T extends CommonEntity>{
 
     }
 
-    public async findOne(user , data){
-
+    public async findOne(user , id){
+        try {
+            const options : FindOneOptions = {
+                  where:{
+                    id:id
+                }
+            }
+            const data =  await this.repository.findOne(options);
+            return {
+                success : true,
+                data: data
+            }
+        } catch (error) {
+            throw new ErrorException('common find one error -- ' + error);  
+        }
     }
 
     public async delete(user , id){
@@ -150,8 +164,7 @@ export class CommonService<T extends CommonEntity>{
         }  
     }
 
-    public async _checkDataExist(currentUser, data) {
-        console.log('check exist of common!')
+    public async _checkDataExist(currentUser, data , id) {
         return {
             success:true
         }

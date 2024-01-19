@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
 import {IsNotEmpty } from "class-validator";
 
 export class CreateDeviceDto {
@@ -18,3 +18,5 @@ export class CreateDeviceDto {
     @IsNotEmpty({message:'version không để trống!'})
     version:string;
 }
+
+export class UpdateDeviceDto extends PartialType(CreateDeviceDto){}

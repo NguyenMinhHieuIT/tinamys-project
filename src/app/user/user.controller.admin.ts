@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiResponse, ApiTags  } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags  } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guard/jwt.auth.guard";
 import { CreateUserDto, GetProfileDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
@@ -50,6 +50,16 @@ export class UserControllerAdmin{
     @Get()
     getAll(@Request() req , @Query() query){
         return this.userSer.findAll(req.user, query);
+    }
+
+    @ApiResponse({status:200})
+    @ApiOperation({summary:'Admin tìm một user !'})
+    @ApiParam({name:'id' , type:Number , required:true})
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('/:id')
+    getOne(@Request() req ,@Param() param){
+        return this.userSer.findOne(req.user,  param.id);
     }
 
 }
