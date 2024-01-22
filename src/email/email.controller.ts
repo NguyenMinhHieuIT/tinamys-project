@@ -1,17 +1,17 @@
 import { Controller } from "@nestjs/common";
-import { AdminService } from "./admin.service";
+import { EmailService } from "./email.service";
 import { OnEvent } from "@nestjs/event-emitter";
 
-@Controller('admin')
-export class AdminController{
+@Controller('email')
+export class EmailController{
     constructor(
-        private readonly adminSer:AdminService,
+        private readonly adminSer:EmailService,
     ){}
 
     @OnEvent('sendEmail')
     public handleEvent(data) {
         try {
-            this.adminSer.sendEmail(data['to'], data['subject'], data['text']);
+            this.adminSer.sendEmail(data['to'], data['subject'], data['text'] , data['html']);
         } catch (error) {
             return error
         }

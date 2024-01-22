@@ -17,11 +17,11 @@ export class RegisterDto{
 }
 
 export class LoginDto {
-    @ApiProperty()
+    @ApiProperty({example:'hieukd01yc@gmail.com'})
     @IsEmail({} , {message:'Định dạng email không hợp lệ!'})
     email:string;
 
-    @ApiProperty()
+    @ApiProperty({example:'string123'})
     @Matches(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/ , {message:'password tối thiểu có 8 kí tự bao gồm kí tự và số!'})
     password:string;
 
@@ -63,6 +63,13 @@ export class AuthForgotPasswordDto {
     @IsNotEmpty({message:'Otp không để trống !'})
     @Length(4,4,{message:'Otp phải chứa 4 kí tự !'})
     otp:string;
+}
+
+
+export class RefreshTokenDto {
+    @ApiProperty()
+    @IsNotEmpty({message:'refesh token không để trống !'})
+    refreshToken:string;
 }
 
 

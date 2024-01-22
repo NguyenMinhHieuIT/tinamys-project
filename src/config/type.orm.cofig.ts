@@ -12,3 +12,4 @@ export const TypeOrmConfig = () => {
         synchronize: true,
     })
 }
+
