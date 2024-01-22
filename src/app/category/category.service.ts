@@ -27,11 +27,23 @@ export class CategoryService extends CommonService<CategoryEntity>{
     public async getTreeById(user , id){
         const treeExist = await this.categoryRepo.findOne({where:{id:id}});
         const tree = await this.dataSource.getTreeRepository(CategoryEntity).findDescendantsTree(treeExist);
-        return tree;
+        return {
+            success:true,
+            data: tree
+        }
+    }
+
+    public async getCountDescendants(user , id){
+        const treeExist = await this.categoryRepo.findOne({where:{id:id}});
+        const countDescendants : number = await this.dataSource.getTreeRepository(CategoryEntity).countDescendants(treeExist);
+        return {
+            success:true,
+            countDescendants
+        }
     }
 
     public async getTree(user){
-        const treeExist = await this.categoryRepo.findOne({where:{id:5}});
+        // const treeExist = await this.categoryRepo.findOne({where:{id:5}});
         const tree = await this.dataSource.getTreeRepository(CategoryEntity).findTrees();
         return {
             success:true,
@@ -41,11 +53,11 @@ export class CategoryService extends CommonService<CategoryEntity>{
 
     public async create(user , data : CreateCategoryDto){
         const {parent_id} = data;
-        const cate = await this.categoryRepo.findOne({where:{id:parent_id}});
-        const cateChil = await this.categoryRepo.create(data);
-        cateChil.parent = cate;
+        const categoryParent = await this.categoryRepo.findOne({where:{id:parent_id}});
+        const categoryChil = await this.categoryRepo.create(data);
+        categoryChil.parent = categoryParent;
 
-        const res = await this.categoryRepo.save(cateChil);
+        const res = await this.categoryRepo.save(categoryChil);
         
         return {
             success:true,
