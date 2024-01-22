@@ -1,3 +1,5 @@
+
+
 export const CONSTANT = {
     GENDER : {
         MALE : 'male',
@@ -6,8 +8,9 @@ export const CONSTANT = {
     STATUS: {
         ACTIVE: 1,
         IN_ACTIVE: 0,
+        DELETE: 7,
     },
     APP:{
-        PORT: +parseInt(process.env.APP_PORT)  || 3000,
+        PORT: +parseInt(process.env.APP_PORT)  || 3001,
     }
 }

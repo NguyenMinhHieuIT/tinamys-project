@@ -5,7 +5,8 @@ import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { appConstant } from './constant/app.constant';
 import { ErrorException } from './exception/error.exception';
 import { AllExceptionFilter } from './exception/all.exception';
-
+import configuration from './config/index';
+import { CONSTANT } from './constant/constant';
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
@@ -40,11 +41,10 @@ async function bootstrap() {
         .build()
   
   const document = SwaggerModule.createDocument(app,config);
-
   SwaggerModule.setup('swagger' , app , document);
-
-  await app.listen(appConstant.port  , () => {
-    console.log("Server run in port: " + appConstant.port);
+  const port = CONSTANT.APP.PORT;
+  await app.listen(port  , () => {
+    console.log("Server run in port: " + port);
   });
 
 }

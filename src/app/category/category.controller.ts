@@ -12,7 +12,7 @@ export class CategoryController{
     @ApiResponse({status:201})
     @ApiOperation({summary:'Admin tạo đối tượng category !'})
     @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post()
     create(@Req() req , @Body() body:CreateCategoryDto){
         return this.categorySer.create(req.user , body);
@@ -29,12 +29,26 @@ export class CategoryController{
         return this.categorySer.getTreeById(req.user , param.id);
     }
 
+
+    @ApiResponse({status:200})
+    @ApiOperation({summary:'Admin tìm số lượng cây con !'})
+    @ApiParam({name:'id'})
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('count-descen/:id')
+    getCountDescendants(@Req() req , @Param() param){
+        return this.categorySer.getCountDescendants(req.user , param.id);
+    }
+
     @ApiResponse({status:200})
     @ApiOperation({summary:'Admin tìm tất cả cây'})
     @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('tree')
     getTree(@Req() req){
         return this.categorySer.getTree(req.user);
     }
+
+
+  
 }
